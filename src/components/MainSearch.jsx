@@ -10,6 +10,8 @@ const MainSearch = () => {
   const dispatch = useDispatch()
   const jobs = useSelector((state) => state.jobs.search)
   const isLoading = useSelector((state) => state.jobs.isLoading)
+  const isError = useSelector((state) => state.jobs.isError)
+  const errorMsg = useSelector((state) => state.jobs.errorMsg)
 
   const handleChange = (e) => {
     setQuery(e.target.value)
@@ -44,6 +46,10 @@ const MainSearch = () => {
             <div className="text-center mt-5">
               <Spinner variant="primary" animation="border" />
             </div>
+          ) : isError ? (
+            <h1 className="display-4 text-center text-danger fw-bold mt-4">
+              {errorMsg}
+            </h1>
           ) : (
             jobs.map((jobData) => <Job key={jobData._id} data={jobData} />)
           )}

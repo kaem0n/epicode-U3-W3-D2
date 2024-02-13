@@ -1,9 +1,17 @@
-import { END_LOADING, LOAD, SAVE_COMPANY_JOBS, SEARCH_JOBS } from '../actions'
+import {
+  END_LOADING,
+  LOAD,
+  SAVE_COMPANY_JOBS,
+  SEARCH_JOBS,
+  TRIGGER_ERROR,
+} from '../actions'
 
 const defaultState = {
   search: [],
   companyJobs: [],
   isLoading: false,
+  isError: false,
+  errorMsg: '',
 }
 
 const jobsReducer = (state = defaultState, action) => {
@@ -22,11 +30,19 @@ const jobsReducer = (state = defaultState, action) => {
       return {
         ...state,
         isLoading: true,
+        isError: false,
+        errorMsg: '',
       }
     case END_LOADING:
       return {
         ...state,
         isLoading: false,
+      }
+    case TRIGGER_ERROR:
+      return {
+        ...state,
+        isError: true,
+        errorMsg: action.payload,
       }
     default:
       return state

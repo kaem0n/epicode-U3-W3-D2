@@ -5,6 +5,7 @@ export const SEARCH_JOBS = 'SEARCH_JOBS'
 export const SAVE_COMPANY_JOBS = 'SAVE_COMPANY_JOBS'
 export const LOAD = 'LOAD'
 export const END_LOADING = 'END_LOADING'
+export const TRIGGER_ERROR = 'TRIGGER_ERROR'
 
 // favorites.js actions
 export const addFavorite = (data) => ({ type: ADD_TO_FAVORITES, payload: data })
@@ -25,10 +26,11 @@ export const saveCompanyJobs = (params) => {
         const { data } = await response.json()
         dispatch({ type: SAVE_COMPANY_JOBS, payload: data })
       } else {
-        alert('Error fetching results')
+        throw new Error(response.status)
       }
     } catch (error) {
       console.log(error)
+      dispatch({ type: TRIGGER_ERROR, payload: `${error}` })
     } finally {
       dispatch({ type: END_LOADING })
     }
@@ -43,12 +45,17 @@ export const searchJobs = (query) => {
       const response = await fetch(baseEndpoint + query + '&limit=20')
       if (response.ok) {
         const { data } = await response.json()
-        dispatch({ type: SEARCH_JOBS, payload: data })
+        if (data.length === 0) {
+          throw new Error('query not valid. Please try again.')
+        } else {
+          dispatch({ type: SEARCH_JOBS, payload: data })
+        }
       } else {
-        alert('Error fetching results')
+        throw new Error(response.status)
       }
     } catch (error) {
       console.log(error)
+      dispatch({ type: TRIGGER_ERROR, payload: `${error}` })
     } finally {
       dispatch({ type: END_LOADING })
     }
