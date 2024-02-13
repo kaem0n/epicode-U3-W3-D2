@@ -1,33 +1,20 @@
-import { useEffect, useState } from 'react'
-import { Container, Row, Col } from 'react-bootstrap'
+import { useEffect } from 'react'
+import { Container, Row, Col, Spinner } from 'react-bootstrap'
 import Job from './Job'
 import { Link, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { saveCompanyJobs } from '../redux/actions'
 
 const CompanySearchResults = () => {
-  const [jobs, setJobs] = useState([])
   const params = useParams()
-
-  const baseEndpoint =
-    'https://strive-benchmark.herokuapp.com/api/jobs?company='
+  const dispatch = useDispatch()
+  const jobs = useSelector((state) => state.jobs.companyJobs)
+  const isLoading = useSelector((state) => state.jobs.isLoading)
 
   useEffect(() => {
-    getJobs()
+    dispatch(saveCompanyJobs(params))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  const getJobs = async () => {
-    try {
-      const response = await fetch(baseEndpoint + params.company)
-      if (response.ok) {
-        const { data } = await response.json()
-        setJobs(data)
-      } else {
-        alert('Error fetching results')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   return (
     <Container>
@@ -40,9 +27,13 @@ const CompanySearchResults = () => {
           <Link to="/favorites" className="btn btn-info">
             GO TO FAVORITES
           </Link>
-          {jobs.map((jobData) => (
-            <Job key={jobData._id} data={jobData} />
-          ))}
+          {isLoading ? (
+            <div className="text-center mt-5">
+              <Spinner variant="primary" animation="border" />
+            </div>
+          ) : (
+            jobs.map((jobData) => <Job key={jobData._id} data={jobData} />)
+          )}
         </Col>
       </Row>
     </Container>

@@ -1,6 +1,7 @@
 import { Button, Col, Container, Row } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { removeFavorite } from '../redux/actions'
 
 const Favorites = () => {
   const favorites = useSelector((state) => state.favorites.list)
@@ -19,9 +20,7 @@ const Favorites = () => {
               <Link to={`/${el.company_name}`}>{el.company_name}</Link>
               <Button
                 variant="danger"
-                onClick={() =>
-                  dispatch({ type: 'REMOVE_FAVORITE', payload: el._id })
-                }
+                onClick={() => dispatch(removeFavorite(el))}
               >
                 REMOVE
               </Button>
